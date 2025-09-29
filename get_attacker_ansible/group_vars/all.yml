@@ -1,0 +1,16 @@
+# group_vars/all.yml
+---
+# Variabili di configurazione del progetto Get Attacker
+# Queste variabili si applicano a tutti gli host gestiti
+
+# GitHub SSH URL del repository del progetto
+repo_url: "git@github.com:StefanoRomanoA/get_attacker.git"
+
+# Percorso locale sul sistema target dove clonare il repository
+local_repo_path: "{{ ansible_env.HOME }}/GIT/get_attacker"
+
+# Percorso di installazione finale degli script (necessita di privilegi sudo)
+install_path: "/usr/local/bin/get_attacker"
+
+# Sottodirectory del repository contenente la configurazione di Fail2ban
+fail2ban_repo_cfg_path: "{{ local_repo_path }}/fail2ban_cfg"

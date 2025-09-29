@@ -1,0 +1,5 @@
+# roles/fail2ban_config/vars/main.yml
+---
+# Percorsi di destinazione dei file di Fail2ban
+fail2ban_jail_dest_path: "/etc/fail2ban/jail.d/"
+fail2ban_action_dest_path: "/etc/fail2ban/action.d/"

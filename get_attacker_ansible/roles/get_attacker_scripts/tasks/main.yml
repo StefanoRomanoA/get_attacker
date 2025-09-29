@@ -1,0 +1,37 @@
+# roles/get_attacker_scripts/tasks/main.yml
+---
+- name: 1. Clone o pull del repository Git
+  ansible.builtin.git:
+    repo: "{{ repo_url }}"         # Variabile dal group_vars/all.yml
+    dest: "{{ local_repo_path }}"  # Variabile dal group_vars/all.yml
+    version: main                  # Specifica il branch o tag da usare
+    update: yes                    # Assicura che venga eseguito un pull se il repo esiste
+    force: yes                     # Risolve conflitti semplici in pull non fast-forward
+  tags: git_pull
+
+- name: 2. Assicura che la directory di installazione sia pulita (rimozione ricorsiva)
+  ansible.builtin.file:
+    path: "{{ install_path }}"
+    state: absent
+  tags: install_cleanup
+
+- name: 3. Assicura che la directory di installazione esista
+  ansible.builtin.file:
+    path: "{{ install_path }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  tags: install_setup
+
+- name: 4. Copia tutti gli script (file .sh) dal repository alla destinazione
+  ansible.builtin.copy:
+    src: "{{ local_repo_path }}/"  # Copia la root del repo locale
+    dest: "{{ install_path }}"
+    owner: root
+    group: root
+    mode: '0755'                  # Imposta i permessi di esecuzione per gli script
+    remote_src: yes               # Indica che la sorgente si trova sul nodo di controllo (localhost)
+  # Usiamo 'remote_src: yes' con 'ansible_connection: local' per copiare dalla directory GIT locale alla directory /usr/local/bin
+  # Per copiare solo i file .sh, potresti dover usare un task 'find' seguito da un 'copy' più complesso.
+  # Per semplicità, in questo esempio si presume che la directory del repository contenga principalmente gli script.

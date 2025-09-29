@@ -1,0 +1,31 @@
+# roles/fail2ban_config/tasks/main.yml
+---
+- name: 1. Copia i file di configurazione di jail.d (con backup automatico)
+  ansible.builtin.copy:
+    src: "{{ fail2ban_repo_cfg_path }}/jail.d/{{ item }}" # Usa il percorso nel repo (dal group_vars/all.yml)
+    dest: "{{ fail2ban_jail_dest_path }}{{ item }}"      # Usa il percorso di destinazione (dal vars/main.yml)
+    owner: root
+    group: root
+    mode: '0644'
+    backup: yes # Questa opzione crea automaticamente un file .bak con timestamp prima di sovrascrivere
+  loop:
+    - 05-jail.local
+  # Questo task salterà con errore se il file sorgente non esiste.
+
+- name: 2. Copia i file di configurazione di action.d (con backup automatico)
+  ansible.builtin.copy:
+    src: "{{ fail2ban_repo_cfg_path }}/action.d/{{ item }}"
+    dest: "{{ fail2ban_action_dest_path }}{{ item }}"
+    owner: root
+    group: root
+    mode: '0644'
+    backup: yes
+  loop:
+    - run-get-attacker.conf # Assicurati che questo nome sia corretto
+
+- name: 3. Riavvia il servizio Fail2ban (necessario per applicare le modifiche)
+  ansible.builtin.systemd:
+    name: fail2ban
+    state: restarted
+  # L'idempotenza di Ansible assicura che questo task venga eseguito solo
+  # se i file precedenti sono stati effettivamente modificati.

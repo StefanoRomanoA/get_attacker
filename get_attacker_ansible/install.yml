@@ -1,0 +1,22 @@
+# install.yml
+---
+- name: Esecuzione dell'Installer Get Attacker
+  hosts: localhost
+  #gather_facts: no
+  gather_facts: yes
+  become: yes # Richiede privilegi di root per l'installazione
+
+  tasks:
+    - name: Inizia l'installazione degli script
+      ansible.builtin.include_role:
+        name: get_attacker_scripts
+      # L'equivalente del tuo prompt interattivo:
+      # Puoi usare una condizione per decidere se saltare il ruolo (es. 'when: not ansible_skip_scripts | default(false)')
+
+    - name: Configura Fail2ban e riavvia il servizio
+      ansible.builtin.include_role:
+        name: fail2ban_config
+      # Questo task verrà eseguito solo se la variabile skip_fail2ban_config non è definita o è falsa
+      # Può anche essere reso interattivo in un modo più avanzato se necessario
+      when: not skip_fail2ban_config | default(false)
+      
