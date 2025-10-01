@@ -24,9 +24,12 @@
     mode: '0755'
   tags: install_setup
 
-- name: 4. Copia tutti gli script (file .sh) dal repository alla destinazione
+# Estratto da roles/get_attacker_scripts/tasks/main.yml
+
+- name: 4. Copia tutti gli script (file .sh) dalla sottocartella 'scripts'
   ansible.builtin.copy:
-    src: "{{ local_repo_path }}/"  # Copia la root del repo locale
+    # La sorgente è la sottocartella 'scripts' all'interno della root clonata
+    src: "{{ local_repo_path }}/scripts/"
     dest: "{{ install_path }}"
     owner: root
     group: root
